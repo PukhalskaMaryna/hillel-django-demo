@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <title>Каталог книг</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 3rem auto; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { padding: .5rem; border-bottom: 1px solid #ddd; text-align: left; }
+    small { color:#666; }
+  </style>
+</head>
+<body>
+  <h1>Каталог 📚</h1>
+  <form method="get" style="margin:.5rem 0;">
+  <input type="text" name="q" value="{{ q }}" placeholder="Пошук за назвою" />
+  <button type="submit">Знайти</button>
+  {% if q %}<small>Знайдено: {{ total }}</small>{% endif %}
+  </form>
+
+  <nav style="margin-top:1rem; display:flex; gap:.5rem; align-items:center;">
+  {% if page_obj.has_previous %}
+    <a href="?q={{ q }}&page=1">« Перша</a>
+    <a href="?q={{ q }}&page={{ page_obj.previous_page_number }}">‹ Попередня</a>
+  {% endif %}
+
+  <span>Сторінка {{ page_obj.number }} з {{ page_obj.paginator.num_pages }}</span>
+
+  {% if page_obj.has_next %}
+    <a href="?q={{ q }}&page={{ page_obj.next_page_number }}">Наступна ›</a>
+    <a href="?q={{ q }}&page={{ page_obj.paginator.num_pages }}">Остання »</a>
+  {% endif %}
+</nav>
+
+
+  {% if books %}
+    <table>
+      <thead>
+        <tr><th>Назва</th><th>Ціна</th><th><small>Додано</small></th></tr>
+      </thead>
+      <tbody>
+        {% for b in books %}
+          <tr>
+            <td>
+              <a href="{% url 'book_detail' slug=b.slug %}">
+                {{ b.title }}
+              </a>
+            </td>
+            <td>{{ b.price }} грн</td>
+            <td><small>{{ b.created_at|date:"d.m.Y H:i" }}</small></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>Поки порожньо. Додай перші книги через <a href="/admin/">адмінку</a>.</p>
+  {% endif %}
+
+  <p><a href="/books/">На головну книгарні</a></p>
+</body>
+</html>

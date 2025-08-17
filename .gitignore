@@ -1,0 +1,22 @@
+# venv / байт-код
+venv/ .venv/ ENV/ env/
+__pycache__/ *.py[cod] *.pyo
+.mypy_cache/ .pytest_cache/
+
+# IDE / OS
+.idea/ .vscode/ .DS_Store
+
+# Node / build
+node_modules/ dist/ build/
+
+# Django
+db.sqlite3
+*.sqlite3
+staticfiles/
+media/**
+!media/.gitkeep
+
+# env-файли
+.env
+.env.*
+*.env

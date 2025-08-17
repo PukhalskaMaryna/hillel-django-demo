@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <title>Книгарня</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 3rem auto; }
+    h1 { margin-bottom: .5rem; }
+    p  { color: #444; }
+
+    /* ⬇ стилі кнопки */
+    .btn {
+      display: inline-block;
+      padding: .6rem 1rem;
+      border-radius: .5rem;
+      border: 1px solid #ddd;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .btn:hover { background: #f5f5f5; }
+  </style>
+</head>
+<body>
+  <h1>Книгарня 📚</h1>
+  <p>Ласкаво просимо! Скоро тут буде список книг.</p>
+
+  <!-- ⬇ кнопка-посилання на каталог за іменем маршруту -->
+  <p><a href="{% url 'book_catalog' %}" class="btn">Перейти до каталогу →</a></p>
+
+  <p><a href="/admin/">Перейти в адмінку</a></p>
+</body>
+</html>

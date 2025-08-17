@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <title>{{ book.title }}</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 3rem auto; }
+    a { text-decoration: none; }
+  </style>
+</head>
+<body>
+  <p><a href="{% url 'book_catalog' %}">← Назад до каталогу</a></p>
+  <h1>{{ book.title }}</h1>
+  <p><strong>Ціна:</strong> {{ book.price }} грн</p>
+  <p><small>Додано: {{ book.created_at|date:"d.m.Y H:i" }}</small></p>
+</body>
+</html>

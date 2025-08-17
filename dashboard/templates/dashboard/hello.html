@@ -1,0 +1,31 @@
+{% load static %}
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8" />
+  <title>{{ title }}</title>
+</head>
+<body>
+  <h1>{{ title }}</h1>
+  <p>Все працює! Далі підключимо JS та jQuery.</p>
+
+  <!-- ПРОБНИЙ МАРКЕР -->
+  <div id="probe" style="padding:8px;border:1px dashed #999;margin:8px 0;">
+    FORM PROBE: якщо ти це бачиш — шаблон оновився.
+  </div>
+
+  <!-- Echo demo -->
+  <h2>Echo demo</h2>
+  <form id="echoForm">
+    {% csrf_token %}
+    <input type="text" id="echoInput" placeholder="Введи текст" required />
+    <button type="submit">Надіслати</button>
+  </form>
+  <pre id="echoOut"></pre>
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <!-- Наш JS -->
+  <script src="{% static 'dashboard/app.js' %}"></script>
+</body>
+</html>

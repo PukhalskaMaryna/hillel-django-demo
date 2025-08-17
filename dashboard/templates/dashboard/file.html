@@ -1,0 +1,72 @@
+{% load static %}
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <title>Файли</title>
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: 32px auto; }
+    .box { border: 1px solid #ddd; padding: 16px; border-radius: 8px; margin-bottom: 16px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 8px; border-bottom: 1px solid #eee; text-align: left; }
+    small { color: #666; }
+  </style>
+</head>
+<body>
+  <h1>Демо роботи з файлами (os + shutil)</h1>
+
+  {% if msg %}<div class="box"><strong>{{ msg }}</strong></div>{% endif %}
+
+  <div class="box">
+    <h2>Завантажити файл → автоматично створиться копія у backup/</h2>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <input type="file" name="file" required>
+      <button type="submit">Завантажити</button>
+    </form>
+    <small>Оригінали: <code>media/uploads/</code>, копії: <code>media/backup/</code></small>
+  </div>
+
+  <div class="box">
+    <h2>Оригінали (uploads)</h2>
+    {% if uploads %}
+      <table>
+        <thead><tr><th>Файл</th><th>Розмір (байт)</th><th>Відкрити</th></tr></thead>
+        <tbody>
+          {% for f in uploads %}
+            <tr>
+              <td>{{ f.name }}</td>
+              <td>{{ f.size }}</td>
+              <td><a href="{{ f.url }}" target="_blank">переглянути</a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p><em>Ще немає файлів.</em></p>
+    {% endif %}
+  </div>
+
+  <div class="box">
+    <h2>Копії (backup)</h2>
+    {% if backups %}
+      <table>
+        <thead><tr><th>Файл</th><th>Розмір (байт)</th><th>Відкрити</th></tr></thead>
+        <tbody>
+          {% for f in backups %}
+            <tr>
+              <td>{{ f.name }}</td>
+              <td>{{ f.size }}</td>
+              <td><a href="{{ f.url }}" target="_blank">переглянути</a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p><em>Ще немає копій.</em></p>
+    {% endif %}
+  </div>
+
+  <p><a href="/">← На головну (Echo demo)</a></p>
+</body>
+</html>
