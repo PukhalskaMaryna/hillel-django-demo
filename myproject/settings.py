@@ -10,31 +10,26 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+# myproject/settings.py
 from pathlib import Path
 import os
-from dotenv import load_dotenv
-load_dotenv(BASE_DIR / ".env")
+from dotenv import load_dotenv  # ← додано
 
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# ВАЖЛИВО: спочатку BASE_DIR
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Потім підвантажуємо .env
+load_dotenv(BASE_DIR / ".env")
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
+# Далі — секрети/прапорці з .env (з дефолтами для дева)
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-only-key")
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"
-
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "").split(",") if os.getenv("DJANGO_ALLOWED_HOSTS") else []
-
 
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',              
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'dashboard',
-    "books",
+    'books.apps.BooksConfig', 
 ]
 
 MIDDLEWARE = [
@@ -54,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
 
 ROOT_URLCONF = 'myproject.urls'
 
@@ -120,7 +116,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -129,3 +125,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+JAZZMIN_SETTINGS = {
+    "site_title": "Мій сайт — Admin",
+    "site_header": "⚡ Мій сайт",
+    "welcome_sign": "Ласкаво просимо до адмінки",
+}
