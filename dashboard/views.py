@@ -1,5 +1,5 @@
 # dashboard/views.py
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST   # ← ДОДАНО
 import json 
@@ -7,6 +7,10 @@ from django.conf import settings
 from pathlib import Path
 import os
 import shutil
+from django.contrib import messages
+from .custom_signals import file_uploaded
+
+
 
 
 def hello(request):
@@ -30,20 +34,33 @@ def files_page(request):
     uploads_dir.mkdir(parents=True, exist_ok=True)
     backups_dir.mkdir(parents=True, exist_ok=True)
 
-    msg = None
+    if request.method == 'POST':
+        f = request.FILES.get('file')
+        if not f:
+            messages.error(request, "Файл не вибрано 🙈")
+            return redirect('dashboard:files')
 
-    # Завантаження файлу
-    if request.method == 'POST' and request.FILES.get('file'):
-        f = request.FILES['file']
-        dest = uploads_dir / f.name
-        with dest.open('wb+') as out:
-            for chunk in f.chunks():
-                out.write(chunk)
+        try:
+            dest = uploads_dir / f.name
+            with dest.open('wb+') as out:
+                for chunk in f.chunks():
+                    out.write(chunk)
 
-        # Демонстрація shutil: копія у backup/
-        shutil.copy2(dest, backups_dir / f.name)
-        msg = f"Завантажено {f.name}; копію створено в backup/"
+            shutil.copy2(dest, backups_dir / f.name)
+            # після успішного копіювання
+            file_uploaded.send(
+                sender=files_page.__class__,
+                request=request,
+                filename=f.name,
+                size=dest.stat().st_size
+            )
 
+            messages.success(request, f"«{f.name}» завантажено ✅ Копію створено у backup/")
+        except Exception as e:
+            messages.error(request, f"Не вдалося завантажити файл: {e}")
+        return redirect('dashboard:files')  # Post/Redirect/Get
+
+    # список файлів (GET)
     def list_dir(path: Path):
         items = []
         if path.exists():
@@ -51,16 +68,9 @@ def files_page(request):
                 p = path / name
                 if p.is_file():
                     rel = p.relative_to(settings.MEDIA_ROOT).as_posix()
-                    items.append({
-                        "name": name,
-                        "size": p.stat().st_size,
-                        "url": settings.MEDIA_URL + rel
-                    })
+                    items.append({"name": name, "size": p.stat().st_size, "url": settings.MEDIA_URL + rel})
         return items
 
-    context = {
-        "msg": msg,
-        "uploads": list_dir(uploads_dir),
-        "backups": list_dir(backups_dir),
-    }
+    context = {"uploads": list_dir(uploads_dir), "backups": list_dir(backups_dir)}
     return render(request, "dashboard/files.html", context)
+
