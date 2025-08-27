@@ -1,11 +1,23 @@
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
-from .models import Book  # якщо ще нема моделі — тимчасово прибери
+from .models import Book
+from django.views.generic import ListView
+from .mixins import SearchQueryMixin
+from .models import Book
 
 def bookstore_home(request):
     return render(request, "books/home.html", {})
 
 
+class BookListView(SearchQueryMixin, ListView):
+    model = Book
+    template_name = "books/catalog.html"
+    context_object_name = "books"
+    paginate_by = 10
+    def get_queryset(self):
+        return self.filter_queryset(super().get_queryset())
+    
+    
 def catalog(request):
     q = (request.GET.get("q") or "").strip()
     qs = Book.objects.all().order_by("title")
@@ -27,3 +39,15 @@ def catalog(request):
 def book_detail(request, slug):
     book = get_object_or_404(Book, slug=slug)
     return render(request, "books/detail.html", {"book": book})
+
+
+
+class BookListView(SearchQueryMixin, ListView):
+    model = Book
+    template_name = "books/catalog.html"
+    context_object_name = "books"
+    paginate_by = 10
+
+    def get_queryset(self):
+        qs = super().get_queryset().order_by("-created_at")
+        return self.filter_queryset(qs)

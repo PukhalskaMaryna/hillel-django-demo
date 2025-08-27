@@ -3,3 +3,4 @@ from django.dispatch import Signal
 
 # наш простий сигнал про завантаження файлу
 file_uploaded = Signal()
+text_analyzed = Signal() 
