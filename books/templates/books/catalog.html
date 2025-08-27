@@ -1,61 +1,116 @@
-<!doctype html>
-<html lang="uk">
-<head>
-  <meta charset="utf-8">
-  <title>Каталог книг</title>
-  <style>
-    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 3rem auto; }
-    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-    th, td { padding: .5rem; border-bottom: 1px solid #ddd; text-align: left; }
-    small { color:#666; }
-  </style>
-</head>
-<body>
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Каталог книг{% endblock %}
+
+{% block content %}
   <h1>Каталог 📚</h1>
+
   <form method="get" style="margin:.5rem 0;">
-  <input type="text" name="q" value="{{ q }}" placeholder="Пошук за назвою" />
-  <button type="submit">Знайти</button>
-  {% if q %}<small>Знайдено: {{ total }}</small>{% endif %}
+    <input type="text" name="q" value="{{ q }}" placeholder="Пошук за назвою" />
+    <button type="submit">Знайти</button>
+    {% if q %}<small>Знайдено: {{ total }}</small>{% endif %}
   </form>
 
-  <nav style="margin-top:1rem; display:flex; gap:.5rem; align-items:center;">
-  {% if page_obj.has_previous %}
-    <a href="?q={{ q }}&page=1">« Перша</a>
-    <a href="?q={{ q }}&page={{ page_obj.previous_page_number }}">‹ Попередня</a>
-  {% endif %}
-
-  <span>Сторінка {{ page_obj.number }} з {{ page_obj.paginator.num_pages }}</span>
-
-  {% if page_obj.has_next %}
-    <a href="?q={{ q }}&page={{ page_obj.next_page_number }}">Наступна ›</a>
-    <a href="?q={{ q }}&page={{ page_obj.paginator.num_pages }}">Остання »</a>
-  {% endif %}
-</nav>
-
+  <section class="card" style="margin-top:1rem;">
+    <h3>Додати книгу (AJAX)</h3>
+    <form id="createBookForm">
+      {% csrf_token %}
+      <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+        <input type="text" name="title" placeholder="Назва" required style="flex:2;">
+        <input type="number" step="0.01" name="price" placeholder="Ціна" required style="flex:1; max-width:180px;">
+        <button class="btn" type="submit">Створити</button>
+      </div>
+      <p id="createBookMsg" class="small" style="margin:.5rem 0 0;"></p>
+    </form>
+  </section>
 
   {% if books %}
-    <table>
+    <table style="width:100%; border-collapse: collapse; margin-top: 1rem;">
       <thead>
-        <tr><th>Назва</th><th>Ціна</th><th><small>Додано</small></th></tr>
+        <tr><th style="text-align:left; padding:.5rem; border-bottom:1px solid #223150;">Назва</th>
+            <th style="text-align:left; padding:.5rem; border-bottom:1px solid #223150;">Ціна</th>
+            <th style="text-align:left; padding:.5rem; border-bottom:1px solid #223150;"><small>Додано</small></th></tr>
       </thead>
-      <tbody>
+      <tbody id="bookRows">
         {% for b in books %}
           <tr>
-            <td>
-              <a href="{% url 'book_detail' slug=b.slug %}">
-                {{ b.title }}
-              </a>
+            <td style="padding:.5rem; border-bottom:1px solid #223150;">
+              <a href="{% url 'books:book_detail' b.slug %}">{{ b.title }}</a>
             </td>
-            <td>{{ b.price }} грн</td>
-            <td><small>{{ b.created_at|date:"d.m.Y H:i" }}</small></td>
+            <td style="padding:.5rem; border-bottom:1px solid #223150;">{{ b.price }} грн</td>
+            <td style="padding:.5rem; border-bottom:1px solid #223150;"><small>{{ b.created_at|date:"d.m.Y H:i" }}</small></td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
   {% else %}
-    <p>Поки порожньо. Додай перші книги через <a href="/admin/">адмінку</a>.</p>
+    <p class="small">Поки порожньо. Додай перші книги через форму вище або через <a href="/admin/">адмінку</a>.</p>
   {% endif %}
 
-  <p><a href="/books/">На головну книгарні</a></p>
-</body>
-</html>
+  <nav style="margin-top:1rem; display:flex; gap:.5rem; align-items:center;">
+    {% if page_obj.has_previous %}
+      <a href="?q={{ q }}&page=1">« Перша</a>
+      <a href="?q={{ q }}&page={{ page_obj.previous_page_number }}">‹ Попередня</a>
+    {% endif %}
+    <span>Сторінка {{ page_obj.number }} з {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+      <a href="?q={{ q }}&page={{ page_obj.next_page_number }}">Наступна ›</a>
+      <a href="?q={{ q }}&page={{ page_obj.paginator.num_pages }}">Остання »</a>
+    {% endif %}
+  </nav>
+
+  <p style="margin-top:1rem;"><a href="{% url 'books:bookstore_home' %}">На головну книгарні</a></p>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('createBookForm');
+  const msg  = document.getElementById('createBookMsg');
+  const rows = document.getElementById('bookRows');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    msg.textContent = 'Створюю...';
+
+    const title = form.querySelector('input[name="title"]').value.trim();
+    const price = form.querySelector('input[name="price"]').value.trim();
+    const csrftoken = form.querySelector('input[name="csrfmiddlewaretoken"]').value;
+
+    try {
+      const resp = await fetch("{% url 'books:api_book_create' %}", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrftoken,
+        },
+        body: JSON.stringify({ title, price })
+      });
+      const data = await resp.json();
+      if (!resp.ok) throw data;
+
+      msg.textContent = `✅ Додано: ${data.title} (${data.price} грн)`;
+
+      // додамо рядочок у таблицю без перезавантаження (якщо таблиця є)
+      if (rows) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="padding:.5rem; border-bottom:1px solid #223150;">
+            <a href="/books/catalog/${data.slug}/">${data.title}</a>
+          </td>
+          <td style="padding:.5rem; border-bottom:1px solid #223150;">${data.price} грн</td>
+          <td style="padding:.5rem; border-bottom:1px solid #223150;"><small>щойно</small></td>
+        `;
+        rows.prepend(tr);
+      }
+
+      form.reset();
+    } catch (err) {
+      console.error(err);
+      msg.textContent = '❌ Помилка: ' + (err.error || 'невідома');
+    }
+  });
+});
+</script>
+{% endblock %}
