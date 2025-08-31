@@ -28,3 +28,10 @@ form button{margin-top:8px}
 .alert-error, .alert-danger{ background: rgba(218,54,51,.15); border-color:#da3633; }
 .alert-warning{ background: rgba(187,128,9,.15); border-color:#bb8009; }
 .alert-info, .alert-debug{ background: rgba(86,156,214,.15); border-color:#569cd6; }
+
+/* tables & forms (global) */
+.table, table { width:100%; border-collapse:collapse; }
+.table th, .table td, th, td { padding:.5rem; border-bottom:1px solid #223150; text-align:left; }
+
+.form-inline { display:flex; gap:.5rem; align-items:center; margin:.5rem 0; }
+

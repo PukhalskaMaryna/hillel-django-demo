@@ -1,31 +1,23 @@
-{% load static %}
-<!doctype html>
-<html lang="uk">
-<head>
-  <meta charset="utf-8" />
-  <title>{{ title }}</title>
-</head>
-<body>
-  <h1>{{ title }}</h1>
-  <p>Все працює! Далі підключимо JS та jQuery.</p>
+{% extends "base.html" %}
+{% block title %}Головна — Мій сайт{% endblock %}
+{% block content %}
+  <div class="grid">
+    <section class="card">
+      <h3>Echo demo (JS ↔ Django)</h3>
+      <p class="small">Введи текст — отримаєш відповідь у JSON без перезавантаження.</p>
+      <form id="echoForm">
+        {% csrf_token %}
+        <input type="text" id="echoInput" placeholder="Введи текст" required />
+        <button class="btn" type="submit">Надіслати</button>
+      </form>
+      <pre id="echoOut" class="small" style="margin-top:8px;"></pre>
+    </section>
 
-  <!-- ПРОБНИЙ МАРКЕР -->
-  <div id="probe" style="padding:8px;border:1px dashed #999;margin:8px 0;">
-    FORM PROBE: якщо ти це бачиш — шаблон оновився.
+    <section class="card">
+      <h3>Швидкі переходи</h3>
+      <p><a class="btn" href="{% url 'dashboard:files' %}">Перейти до файлів</a></p>
+      <p><a class="btn secondary" href="/books/">Перейти до книг</a></p>
+      <p class="small">Пінг бекенду: <a href="/api/ping/" target="_blank">/api/ping/</a></p>
+    </section>
   </div>
-
-  <!-- Echo demo -->
-  <h2>Echo demo</h2>
-  <form id="echoForm">
-    {% csrf_token %}
-    <input type="text" id="echoInput" placeholder="Введи текст" required />
-    <button type="submit">Надіслати</button>
-  </form>
-  <pre id="echoOut"></pre>
-
-  <!-- jQuery -->
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <!-- Наш JS -->
-  <script src="{% static 'dashboard/app.js' %}"></script>
-</body>
-</html>
+{% endblock %}

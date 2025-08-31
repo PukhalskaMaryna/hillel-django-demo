@@ -11,7 +11,7 @@ from .mixins import (
     SuccessMessageMixinLite, JSONBodyMixin, StaffRequiredMixin, CacheControlMixin
 )
 
-# Головна книгарні (твій існуючий FBV можна лишити як є)
+# Головна книгарні 
 def bookstore_home(request):
     return render(request, "books/home.html")
 
@@ -20,11 +20,14 @@ class BookListView(PageSizeFromQueryMixin,
                    SearchQueryMixin,
                    CSVExportMixin,
                    SelectPrefetchMixin,
-                   CacheControlMixin,      # bonus: no-store для динаміки
+                   CacheControlMixin,   
                    ListView):
     model = Book
     template_name = "books/catalog.html"
     context_object_name = "books"
+    select_related = ("author",)  
+    prefetch_related = () 
+
 
     # Ordering
     default_ordering = "-created_at"
@@ -68,12 +71,12 @@ class BookDetailView(BreadcrumbsMixin, DetailView):
 
 class BookCreateView(SuccessMessageMixinLite, CreateView):
     model = Book
-    fields = ("title", "price")  # slug заповниться автоматично
+    fields = ("title", "price")  
     template_name = "books/book_form.html"
     success_url = reverse_lazy("books:book_catalog")
     success_message = "Книгу «{object}» створено!"
 
-# API-приклад на CBV з JSONBodyMixin (для AJAX/інтеграцій)
+# API-приклад на CBV з JSONBodyMixin 
 class BookApiCreateView(JSONBodyMixin, View):
     def post(self, request, *args, **kwargs):
         data = self.parse_json_body()
@@ -87,7 +90,7 @@ class BookApiCreateView(JSONBodyMixin, View):
             return JsonResponse({"error": str(e)}, status=400)
         return JsonResponse({"id": obj.id, "slug": obj.slug, "title": obj.title, "price": str(obj.price)}, status=201)
 
-# Staff-only сторінка (демо StaffRequiredMixin)
+# Staff-only сторінка 
 class BooksReportView(StaffRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         # мінімальний демо-контент

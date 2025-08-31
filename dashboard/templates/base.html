@@ -5,6 +5,7 @@
   <meta charset="utf-8" />
   <title>{% block title %}Мій сайт{% endblock %}</title>
   <link rel="stylesheet" href="{% static 'dashboard/style.css' %}">
+  <link rel="icon" href="{% static 'dashboard/favicon.svg' %}" type="image/svg+xml">
 </head>
 <body>
   <nav class="nav">
@@ -18,7 +19,20 @@
     </div>
   </nav>
 
-    <main class="container">
+  {# ⬇⬇⬇ Крихти (breadcrumbs) — показуємо, якщо присутні в контексті ⬇⬇⬇ #}
+  {% if breadcrumbs %}
+    <div class="container small" style="opacity:.9;margin-top:8px">
+      {% for label, url in breadcrumbs %}
+        {% if url %}
+          <a href="{{ url }}">{{ label }}</a>{% if not forloop.last %} / {% endif %}
+        {% else %}
+          <span>{{ label }}</span>
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <main class="container">
 
     {# Django messages #}
     {% if messages %}
@@ -34,9 +48,14 @@
     {% block content %}{% endblock %}
   </main>
 
-
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="{% static 'dashboard/app.js' %}"></script>
   {% block extra_js %}{% endblock %}
+
+  <script>
+    setTimeout(() => {
+      document.querySelectorAll('.alert-info').forEach(el => el.remove());
+    }, 4000);
+  </script>
 </body>
 </html>

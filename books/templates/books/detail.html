@@ -1,17 +1,10 @@
-<!doctype html>
-<html lang="uk">
-<head>
-  <meta charset="utf-8">
-  <title>{{ book.title }}</title>
-  <style>
-    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 3rem auto; }
-    a { text-decoration: none; }
-  </style>
-</head>
-<body>
-  <p><a href="{% url 'book_catalog' %}">← Назад до каталогу</a></p>
-  <h1>{{ book.title }}</h1>
-  <p><strong>Ціна:</strong> {{ book.price }} грн</p>
-  <p><small>Додано: {{ book.created_at|date:"d.m.Y H:i" }}</small></p>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}{{ book.title }}{% endblock %}
+{% block content %}
+  <p class="small"><a href="{% url 'books:book_catalog' %}">← Назад до каталогу</a></p>
+  <section class="card">
+    <h3>{{ book.title }}</h3>
+    <p><strong>Ціна:</strong> {{ book.price }} грн</p>
+    <p class="small">Додано: {{ book.created_at|date:"d.m.Y H:i" }}</p>
+  </section>
+{% endblock %}
