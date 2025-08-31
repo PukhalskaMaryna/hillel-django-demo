@@ -1,61 +1,95 @@
 # books/views.py
 from django.shortcuts import render, get_object_or_404
-from django.views.generic import ListView
-from django.views.decorators.http import require_POST
+from django.urls import reverse_lazy
 from django.http import JsonResponse
-from decimal import Decimal, InvalidOperation
-import json
-
+from django.views import View
+from django.views.generic import ListView, DetailView, CreateView
 from .models import Book
-from .mixins import SearchQueryMixin
+from .mixins import (
+    SearchQueryMixin, PageSizeFromQueryMixin, OrderingMixin,
+    CSVExportMixin, SelectPrefetchMixin, BreadcrumbsMixin,
+    SuccessMessageMixinLite, JSONBodyMixin, StaffRequiredMixin, CacheControlMixin
+)
 
-
+# Головна книгарні (твій існуючий FBV можна лишити як є)
 def bookstore_home(request):
     return render(request, "books/home.html")
 
-
-class BookListView(SearchQueryMixin, ListView):
+class BookListView(PageSizeFromQueryMixin,
+                   OrderingMixin,
+                   SearchQueryMixin,
+                   CSVExportMixin,
+                   SelectPrefetchMixin,
+                   CacheControlMixin,      # bonus: no-store для динаміки
+                   ListView):
     model = Book
     template_name = "books/catalog.html"
     context_object_name = "books"
+
+    # Ordering
+    default_ordering = "-created_at"
+    allowed_order_fields = ("created_at", "title", "price")
+
+    # Pagination
+    default_page_size = 10
+    max_page_size = 50
     paginate_by = 10
 
+    # CSV
+    csv_filename = "books.csv"
+    csv_fields = ("title", "price", "created_at", "slug")
+
+    # Search
+    search_fields = ("title__icontains", "slug__icontains")
+
+    # Cache
+    cache_control = "no-store"
+
     def get_queryset(self):
-        qs = super().get_queryset().order_by("-created_at")
+        qs = super().get_queryset().order_by(self.get_ordering() or "-created_at")
         return self.filter_queryset(qs)
 
 
-def book_detail(request, slug):
-    book = get_object_or_404(Book, slug=slug)
-    return render(request, "books/detail.html", {"book": book})
+class BookDetailView(BreadcrumbsMixin, DetailView):
+    model = Book
+    template_name = "books/detail.html"
+    context_object_name = "book"
+    slug_field = "slug"
+    slug_url_kwarg = "slug"
+
+    def get_breadcrumbs(self):
+        obj = self.get_object()
+        return [
+            ("Книги", "/books/"),
+            ("Каталог", "/books/catalog/"),
+            (obj.title, ""),
+        ]
 
 
-@require_POST
-def api_book_create(request):
-    """
-    Приймає JSON {"title": "...", "price": "..."} → створює Book і повертає дані.
-    """
-    try:
-        data = json.loads((request.body or b"{}").decode("utf-8"))
-    except json.JSONDecodeError:
-        return JsonResponse({"error": "invalid_json"}, status=400)
+class BookCreateView(SuccessMessageMixinLite, CreateView):
+    model = Book
+    fields = ("title", "price")  # slug заповниться автоматично
+    template_name = "books/book_form.html"
+    success_url = reverse_lazy("books:book_catalog")
+    success_message = "Книгу «{object}» створено!"
 
-    title = (data.get("title") or "").strip()
-    price_raw = (str(data.get("price") or "")).strip()
+# API-приклад на CBV з JSONBodyMixin (для AJAX/інтеграцій)
+class BookApiCreateView(JSONBodyMixin, View):
+    def post(self, request, *args, **kwargs):
+        data = self.parse_json_body()
+        title = (data.get("title") or "").strip()
+        price = data.get("price")
+        if not title or price is None:
+            return JsonResponse({"error": "title та price обов'язкові"}, status=400)
+        try:
+            obj = Book.objects.create(title=title, price=price)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
+        return JsonResponse({"id": obj.id, "slug": obj.slug, "title": obj.title, "price": str(obj.price)}, status=201)
 
-    if not title:
-        return JsonResponse({"error": "title_required"}, status=400)
-
-    try:
-        price = Decimal(price_raw)
-    except InvalidOperation:
-        return JsonResponse({"error": "bad_price"}, status=400)
-
-    if price < 0:
-        return JsonResponse({"error": "price_negative"}, status=400)
-
-    book = Book.objects.create(title=title, price=price)  # slug згенерується в save/signals
-
-    return JsonResponse(
-        {"ok": True, "slug": book.slug, "title": book.title, "price": str(book.price)}
-    )
+# Staff-only сторінка (демо StaffRequiredMixin)
+class BooksReportView(StaffRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        # мінімальний демо-контент
+        total = Book.objects.count()
+        return JsonResponse({"report": "ok", "total_books": total})

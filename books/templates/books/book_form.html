@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Додати книгу{% endblock %}
+{% block content %}
+<section class="card">
+  <h3>Додати книгу</h3>
+  <form method="post">
+    {% csrf_token %}
+    <div style="display:grid;gap:.5rem;max-width:420px">
+      {{ form.as_p }}
+      <button class="btn" type="submit">Зберегти</button>
+    </div>
+  </form>
+  <p class="small" style="margin-top:.5rem">
+    Повернутися до <a href="{% url 'books:book_catalog' %}">каталогу</a>
+  </p>
+</section>
+{% endblock %}
