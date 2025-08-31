@@ -29,19 +29,22 @@ ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "").split(",") if os.getenv("D
 # Application definition
 
 INSTALLED_APPS = [
-    'jazzmin',              
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'books.apps.BooksConfig', 
-    'dashboard.apps.DashboardConfig',
 
+    'rest_framework',          # ← ДОДАТИ
+    'books.apps.BooksConfig',
+    'dashboard.apps.DashboardConfig',
 ]
 
+
 MIDDLEWARE = [
+
 
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
