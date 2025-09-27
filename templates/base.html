@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}Книги{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="/static/css/site.css" rel="stylesheet">
+  
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <nav>
+        <a href="/">🏠 Головна</a>
+        <a href="/books/">📚 Книги</a>
+        <a href="/files/">🗂️ Файли</a>
+        <a href="/api/books/?format=api">🔌 API</a>
+        <a href="/admin/">🛠️ Admin</a>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap">
+    {% block content %}{% endblock %}
+  </main>
+  <footer>Powered by Django + DRF. Все працює — і гарно виглядає 😉</footer>
+</body>
+</html>

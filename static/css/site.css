@@ -1,0 +1,13 @@
+/* custom styles hook */
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Noto Sans',Cantarell,'Helvetica Neue',Arial,sans-serif;margin:0;background:#0b1020;color:#e8eaf2}
+    header{padding:16px 0;border-bottom:1px solid rgba(255,255,255,.08);background:linear-gradient(135deg,#0b1020,#141b34)}
+    .wrap{max-width:960px;margin:0 auto;padding:0 24px}
+    nav a{display:inline-block;margin-right:12px;padding:6px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#101737}
+    nav a:hover{background:#1a2145;text-decoration:none}
+    a{color:#8bd3ff;text-decoration:none}
+    .card{background:#121935;border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:16px;margin:12px 0;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+    .pill{display:inline-block;padding:4px 10px;border-radius:999px;background:#1b2447;color:#c6d4ff;border:1px solid rgba(255,255,255,.08);font-size:12px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+    footer{opacity:.7;padding:24px;text-align:center}
+    .btn{display:inline-block;padding:8px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:#0f1530}
+    .btn:hover{background:#1a2145}
