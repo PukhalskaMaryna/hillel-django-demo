@@ -21,3 +21,42 @@ def files_list(request):
             rel = "" if rel == "." else (rel.replace("\\","/") + "/")
             tree.append((rel, sorted(filenames)))
     return render(request, "files/list.html", {"MEDIA_URL": settings.MEDIA_URL, "MEDIA_ROOT": str(root), "tree": tree})
+
+
+# === Token page (отримання токена за логін/пароль) ===
+from django.contrib.auth import authenticate
+from django.shortcuts import render
+from rest_framework.authtoken.models import Token
+
+def token_page(request):
+    token_value = None
+    error = None
+    if request.method == "POST":
+        username = request.POST.get("username", "")
+        password = request.POST.get("password", "")
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            token, _ = Token.objects.get_or_create(user=user)
+            token_value = token.key
+        else:
+            error = "Невірний логін або пароль"
+    return render(request, "token_page.html", {"token": token_value, "error": error})
+
+# === Token page (отримання DRF-токена за логін/пароль) ===
+from django.contrib.auth import authenticate
+from django.shortcuts import render
+from rest_framework.authtoken.models import Token
+
+def token_page(request):
+    token_value = None
+    error = None
+    if request.method == "POST":
+        username = request.POST.get("username", "")
+        password = request.POST.get("password", "")
+        user = authenticate(request, username=username, password=password)
+        if user:
+            token, _ = Token.objects.get_or_create(user=user)
+            token_value = token.key
+        else:
+            error = "Невірний логін або пароль"
+    return render(request, "token_page.html", {"token": token_value, "error": error})
