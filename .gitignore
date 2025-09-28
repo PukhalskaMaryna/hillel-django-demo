@@ -16,3 +16,7 @@ __pycache__/
 
 # secrets
 .env
+# local backups / temp
+_backup_just_in_case/
+_backup_rest/
+*.bak
