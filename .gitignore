@@ -1,11 +1,18 @@
-# venv / IDE
+# venvs
 .venv/
-*.pyc
-__pycache__/
-.idea/
-.vscode/
-# django
+venv/
+dlvenv/
+
+# local wheels cache
+wheels/
+
+# DB and user uploads
 db.sqlite3
-/staticfiles/
-# OS
-.DS_Store
+media/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# secrets
+.env
