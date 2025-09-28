@@ -13,9 +13,15 @@ import json
 from .custom_signals import file_uploaded, text_analyzed
 
 
-def hello(request):
-    """Головна сторінка з демо Echo та швидкими посиланнями."""
-    return render(request, "dashboard/hello.html", {"title": "Dashboard Hello"})
+def home(request):
+    """
+    Головна дашборда. Можеш створити шаблон:
+    templates/dashboard/home.html
+    (або лишити hello.html — тоді просто змінити ім'я тут)
+    """
+    # Якщо вже маєш hello.html — можеш повернути його:
+    # return render(request, "dashboard/hello.html", {"title": "Dashboard"})
+    return render(request, "dashboard/home.html", {"title": "Dashboard"})
 
 
 def api_ping(request):

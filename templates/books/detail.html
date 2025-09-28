@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}{{ book.title }} — Книга{% endblock %}
+{% block header %}{{ book.title }}{% endblock %}
+{% block content %}
+  <div class="card">
+    <div class="pill">ID: {{ book.id }}</div>
+    <p><strong>Автор:</strong> {{ book.author|default:"—" }}</p>
+    <p><strong>Опубліковано:</strong> {{ book.published_date|default:"—" }}</p>
+    <p style="white-space:pre-wrap">{{ book.description|default:"(без опису)" }}</p>
+    <p><a class="btn" href="/">← До списку</a></p>
+  </div>
+  <div class="card">
+    <h3>API цієї книги</h3>
+    <p>GET: <a href="/api/books/{{ book.id }}/" target="_blank">/api/books/{{ book.id }}/</a></p>
+  </div>
+{% endblock %}

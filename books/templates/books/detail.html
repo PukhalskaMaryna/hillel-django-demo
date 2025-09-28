@@ -1,10 +1,46 @@
-{% extends "base.html" %}
-{% block title %}{{ book.title }}{% endblock %}
-{% block content %}
-  <p class="small"><a href="{% url 'books:book_catalog' %}">← Назад до каталогу</a></p>
-  <section class="card">
-    <h3>{{ book.title }}</h3>
-    <p><strong>Ціна:</strong> {{ book.price }} грн</p>
-    <p class="small">Додано: {{ book.created_at|date:"d.m.Y H:i" }}</p>
-  </section>
-{% endblock %}
+{% load static %}
+<!doctype html>
+<html lang="ук">
+<head>
+  <meta charset="utf-8">
+  <title>{{ book.title }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;margin:0;padding:0 1rem;}
+    .wrap{max-width:820px;margin:0 auto;}
+    .btn{display:inline-block;padding:.5rem .75rem;border-radius:8px;border:1px solid #ddd;text-decoration:none}
+    .btn-primary{background:#0d6efd;color:#fff;border-color:#0d6efd}
+    .btn-secondary{background:#f5f5f5;color:#222}
+    .btn-danger{background:#dc3545;color:#fff;border-color:#dc3545}
+    .card{padding:1.25rem;border:1px solid #eee;border-radius:12px}
+    nav{display:flex;gap:.5rem;flex-wrap:wrap;margin:1rem 0 1.25rem}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <a href="/books/catalog/" class="btn btn-secondary">← До списку</a>
+    <a href="/books/{{ book.slug }}/edit/" class="btn btn-primary">Редагувати</a>
+    <a href="/books/{{ book.slug }}/delete/" class="btn btn-danger">Видалити</a>
+  </nav>
+
+  <article class="card">
+    <header>
+      <h1 style="margin:.25rem 0 0;">{{ book.title }}</h1>
+      {% if book.author %}<div style="color:#666;margin:.25rem 0 .75rem;">Автор: {{ book.author }}</div>{% endif %}
+      <div style="color:#666;font-size:.9rem;">
+        Створено: {{ book.created|date:"Y-m-d H:i" }} • Оновлено: {{ book.updated|date:"Y-m-d H:i" }} • Slug: <code>{{ book.slug }}</code>
+      </div>
+    </header>
+    {% if book.description %}
+      <section style="margin-top:1rem;">
+        <h3 style="margin:.25rem 0 .5rem;">Опис</h3>
+        <div style="white-space:pre-line;">{{ book.description }}</div>
+      </section>
+    {% else %}
+      <section style="margin-top:1rem;color:#666;">Опису поки немає.</section>
+    {% endif %}
+  </article>
+</div>
+</body>
+</html>

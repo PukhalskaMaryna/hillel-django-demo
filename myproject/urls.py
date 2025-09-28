@@ -1,19 +1,16 @@
-from django.contrib import admin
-from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-
-from rest_framework.routers import DefaultRouter
-from books.views import BookViewSet
-
-router = DefaultRouter()
-router.register(r'books', BookViewSet, basename='book')
+from django.contrib import admin
+from django.urls import path, include
+from books import views as books_views
+from django.views.generic import TemplateView
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('dashboard.urls')),
-    path('books/', include('books.urls')),
-    path('api/', include(router.urls)),   # ⬅️ це додає /api/books/
+    path('files/', books_views.files_list, name='files_list'),
+    path("admin/", admin.site.urls),
+    path("", TemplateView.as_view(template_name="home.html"), name="home"),  # ГОЛОВНА
+    path("books/", include("books.urls")),                                   # КАТАЛОГ НА /books/
+    path("api/", include("books.api")),                                       # API
 ]
 
 if settings.DEBUG:

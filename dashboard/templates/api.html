@@ -1,0 +1,21 @@
+{% extends "rest_framework/base.html" %}
+
+{% block content %}
+  <div class="content-main">
+    <p style="margin:0 0 1rem 0;">
+      <a href="{% url 'dashboard:home' %}">← На головну</a>
+    </p>
+
+    {% if data %}
+      <ul class="list-group">
+        {% for name, url in data.items %}
+          <li class="list-group-item">
+            <a href="{{ url }}">{{ name }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-muted">Нема зареєстрованих endpoint'ів.</p>
+    {% endif %}
+  </div>
+{% endblock %}

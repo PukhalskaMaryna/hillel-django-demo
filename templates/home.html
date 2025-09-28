@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Головна{% endblock %}
+{% block content %}
+  <div class="card">
+    <h2>Ласкаво просимо 👋</h2>
+    <p>Куди йдемо?</p>
+    <p>
+      <a class="btn" href="/books/">📚 Каталог книг</a>
+      <a class="btn" href="/files/">🗂️ Файли</a>
+      <a class="btn" href="/api/books/?format=api">🔌 API (browsable)</a>
+      <a class="btn" href="/api/books/?format=json">{ } API (JSON)</a>
+      <a class="btn" href="/admin/">🛠️ Admin</a>
+    </p>
+  </div>
+{% endblock %}

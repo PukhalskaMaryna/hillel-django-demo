@@ -1,35 +1,89 @@
-{% extends "base.html" %}
-{% block title %}Каталог книг{% endblock %}
-{% block content %}
-  <section class="card">
-    <h3>Каталог 📚</h3>
-    <form method="get" class="form-inline">
-      <input type="text" name="q" value="{{ q }}" placeholder="Пошук за назвою" />
-      <button class="btn" type="submit">Знайти</button>
-      {% if q %}<small class="small">Знайдено: {{ total }}</small>{% endif %}
-    </form>
-  </section>
+{% load static %}
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <title>Книги</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;margin:0;padding:0 1rem;}
+    .wrap{max-width:900px;margin:0 auto;}
+    .btn{display:inline-block;padding:.5rem .75rem;border-radius:8px;border:1px solid #ddd;text-decoration:none}
+    .btn-primary{background:#0d6efd;color:#fff;border-color:#0d6efd}
+    .btn-secondary{background:#f5f5f5;color:#222}
+    .btn-danger{background:#dc3545;color:#fff;border-color:#dc3545}
+    nav{display:flex;gap:.5rem;flex-wrap:wrap;margin:1rem 0 1.25rem}
+    .card{padding:1rem;border:1px solid #eee;border-radius:12px}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header style="display:flex;align-items:center;justify-content:space-between;gap:1rem;margin:1.25rem 0;">
+    <h1 style="margin:0;">Книги</h1>
+    <div>
+      <a class="btn btn-secondary" href="/">Головна</a>
+      <a class="btn btn-primary" href="/books/create/">Додати книгу</a>
+    </div>
+  </header>
+
+  <form method="get" action="" style="display:flex;gap:.5rem;align-items:center;margin-bottom:1rem;">
+    <input type="text" name="q" value="{{ q|default_if_none:'' }}" placeholder="Пошук за назвою, автором, описом…"
+           style="flex:1;min-width:240px;padding:.5rem;border:1px solid #ddd;border-radius:8px;">
+    {% if q %}<a class="btn btn-secondary" href="/books/catalog/">Скинути</a>{% endif %}
+    <button class="btn btn-primary" type="submit">Шукати</button>
+  </form>
 
   {% if books %}
-    <section class="card">
-      <table class="table">
-        <thead>
-          <tr><th>Назва</th><th>Ціна</th><th><small>Додано</small></th></tr>
-        </thead>
-        <tbody>
-          {% for b in books %}
-            <tr>
-              <td>
-                <a href="{% url 'books:book_detail' b.slug %}">{{ b.title }}</a>
-              </td>
-              <td>{{ b.price }} грн</td>
-              <td><small>{{ b.created_at|date:"d.m.Y H:i" }}</small></td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </section>
+    <ul style="list-style:none;padding:0;margin:0;display:grid;gap:.75rem;">
+      {% for book in books %}
+        <li class="card">
+          <div style="display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+            <div style="min-width:240px;">
+              <h3 style="margin:.25rem 0 0;">
+                <a href="/books/{{ book.slug }}/" style="text-decoration:none">{{ book.title }}</a>
+              </h3>
+              {% if book.author %}<div style="color:#666;margin:.25rem 0 .5rem;">Автор: {{ book.author }}</div>{% endif %}
+              {% if book.description %}
+                <p style="margin:.25rem 0 0;white-space:pre-line;">{{ book.description|truncatechars:200 }}</p>
+              {% endif %}
+            </div>
+            <div style="text-align:right;min-width:160px;color:#666;">
+              <div>Створено: {{ book.created|date:"Y-m-d H:i" }}</div>
+              <div>Оновлено: {{ book.updated|date:"Y-m-d H:i" }}</div>
+              <div>Slug: <code>{{ book.slug }}</code></div>
+            </div>
+          </div>
+          <div style="margin-top:.75rem;display:flex;gap:.5rem;flex-wrap:wrap;">
+            <a class="btn btn-secondary" href="/books/{{ book.slug }}/">Переглянути</a>
+            <a class="btn btn-secondary" href="/books/{{ book.slug }}/edit/">Редагувати</a>
+            <a class="btn btn-danger" href="/books/{{ book.slug }}/delete/">Видалити</a>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+
+    {% if is_paginated %}
+      <nav aria-label="Pagination" style="margin-top:1rem;display:flex;gap:.5rem;flex-wrap:wrap;">
+        {% if page_obj.has_previous %}
+          <a class="btn btn-secondary" href="?page=1{% if q %}&q={{ q|urlencode }}{% endif %}">« Перша</a>
+          <a class="btn btn-secondary" href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q|urlencode }}{% endif %}">‹ Назад</a>
+        {% else %}
+          <span class="btn btn-secondary">« Перша</span>
+          <span class="btn btn-secondary">‹ Назад</span>
+        {% endif %}
+        <span class="btn btn-secondary">Сторінка {{ page_obj.number }} з {{ paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+          <a class="btn btn-secondary" href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q|urlencode }}{% endif %}">Вперед ›</a>
+          <a class="btn btn-secondary" href="?page={{ paginator.num_pages }}{% if q %}&q={{ q|urlencode }}{% endif %}">Остання »</a>
+        {% else %}
+          <span class="btn btn-secondary">Вперед ›</span>
+          <span class="btn btn-secondary">Остання »</span>
+        {% endif %}
+      </nav>
+    {% endif %}
   {% else %}
-    <section class="card"><p class="small">Поки порожньо. Додай перші книги через <a href="/admin/">адмінку</a>.</p></section>
+    <div class="card">Поки що книг немає. <a href="/books/create/">Додай першу</a> або скористайся пошуком.</div>
   {% endif %}
-{% endblock %}
+</div>
+</body>
+</html>

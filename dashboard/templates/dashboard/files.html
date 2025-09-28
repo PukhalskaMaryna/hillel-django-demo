@@ -1,56 +1,58 @@
 {% extends "base.html" %}
-{% block title %}Файли — Мій сайт{% endblock %}
+{% load static %}
+
+{% block title %}Файли{% endblock %}
+
 {% block content %}
-  <section class="card">
-    <h3>Завантажити файл (os + shutil)</h3>
-    <form method="post" enctype="multipart/form-data">
+<main class="container" style="max-width: 1000px; margin: 1.25rem auto;">
+
+  <h1 style="margin:0 0 1rem 0;">Файли 📁</h1>
+
+  <section class="card" style="padding:1rem; margin-bottom:1rem;">
+    <h3 style="margin-top:0;">Завантажити файл</h3>
+    <form method="post" enctype="multipart/form-data" style="display:flex; gap:.5rem; align-items:center;">
       {% csrf_token %}
       <input type="file" name="file" required>
       <button class="btn" type="submit">Завантажити</button>
     </form>
-    <p class="small">Оригінали: <code>media/uploads/</code>, копії: <code>media/backup/</code></p>
-    {% if msg %}<p><strong>{{ msg }}</strong></p>{% endif %}
+    <p class="small" style="color:#64748b; margin-top:.5rem;">
+      Файл збережеться у <code>media/uploads</code> і буде скопійований у <code>media/backup</code>.
+    </p>
   </section>
 
-  <div class="grid">
-    <section class="card">
-      <h3>Оригінали (uploads)</h3>
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
+    <section class="card" style="padding:1rem;">
+      <h3 style="margin-top:0;">Завантаження</h3>
       {% if uploads %}
-        <table>
-          <thead><tr><th>Файл</th><th>Розмір</th><th>Відкрити</th></tr></thead>
-          <tbody>
-          {% for f in uploads %}
-            <tr>
-              <td>{{ f.name }}</td>
-              <td>{{ f.size }}</td>
-              <td><a href="{{ f.url }}" target="_blank">переглянути</a></td>
-            </tr>
-          {% endfor %}
-          </tbody>
-        </table>
+        <ul>
+        {% for f in uploads %}
+          <li>
+            <a href="{{ f.url }}" target="_blank" rel="noopener">{{ f.name }}</a>
+            <span style="color:#64748b;">— {{ f.size }} B</span>
+          </li>
+        {% endfor %}
+        </ul>
       {% else %}
-        <p class="small">Ще немає файлів.</p>
+        <p class="small" style="color:#64748b;">Поки пусто… як холодильник у понеділок 😅</p>
       {% endif %}
     </section>
 
-    <section class="card">
-      <h3>Копії (backup)</h3>
+    <section class="card" style="padding:1rem;">
+      <h3 style="margin-top:0;">Бекапи</h3>
       {% if backups %}
-        <table>
-          <thead><tr><th>Файл</th><th>Розмір</th><th>Відкрити</th></tr></thead>
-          <tbody>
-          {% for f in backups %}
-            <tr>
-              <td>{{ f.name }}</td>
-              <td>{{ f.size }}</td>
-              <td><a href="{{ f.url }}" target="_blank">переглянути</a></td>
-            </tr>
-          {% endfor %}
-          </tbody>
-        </table>
+        <ul>
+        {% for f in backups %}
+          <li>
+            <a href="{{ f.url }}" target="_blank" rel="noopener">{{ f.name }}</a>
+            <span style="color:#64748b;">— {{ f.size }} B</span>
+          </li>
+        {% endfor %}
+        </ul>
       {% else %}
-        <p class="small">Ще немає копій.</p>
+        <p class="small" style="color:#64748b;">Ще нічого не збереглось у backup.</p>
       {% endif %}
     </section>
   </div>
+
+</main>
 {% endblock %}

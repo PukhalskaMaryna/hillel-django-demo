@@ -1,61 +1,91 @@
+{# dashboard/templates/base.html #}
 {% load static %}
-<!doctype html>
+<!DOCTYPE html>
 <html lang="uk">
 <head>
   <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{% block title %}Мій сайт{% endblock %}</title>
-  <link rel="stylesheet" href="{% static 'dashboard/style.css' %}">
-  <link rel="icon" href="{% static 'dashboard/favicon.svg' %}" type="image/svg+xml">
+
+  <link rel="stylesheet" href="{% static 'dashboard/base.css' %}">
+  <style>
+    :root { --bg:#f8fafc; --card:#ffffff; --text:#0f172a; --muted:#64748b; --primary:#ef4444; --ring:#e2e8f0; --radius:12px; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans"; background: var(--bg); color: var(--text); }
+    a { color: var(--primary); text-decoration: none; } a:hover { text-decoration: underline; }
+
+    header.site { background: var(--card); border-bottom: 1px solid var(--ring); position: sticky; top: 0; z-index: 10; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 1rem; }
+    .topbar { display:flex; align-items:center; gap:1rem; justify-content:space-between; }
+    .brand { display:flex; align-items:center; gap:.6rem; font-weight:700; }
+    .brand .logo { width:28px; height:28px; display:grid; place-items:center; border-radius:8px; background:var(--primary); color:#fff; font-size:16px; }
+    nav a { margin-right:1rem; color:var(--muted); } nav a.active, nav a:hover { color:var(--text); }
+
+    .breadcrumbs { background:#fff; border-bottom:1px solid var(--ring); }
+    .crumbs { font-size:.95rem; color:var(--muted); display:flex; gap:.75rem; align-items:center; }
+    .crumbs a { color:var(--text); }
+
+    .flash { margin: 1rem auto 0; max-width:1100px; padding: 1rem; }
+    .alert { background:#ecfeff; color:#075985; border:1px solid #bae6fd; padding:.75rem 1rem; border-radius:var(--radius); margin-bottom:.5rem; }
+
+    .card { background:var(--card); border:1px solid var(--ring); border-radius:var(--radius); box-shadow:0 1px 0 rgba(15,23,42,.03); }
+    .btn { display:inline-block; padding:.5rem .9rem; border-radius:10px; border:1px solid var(--ring); background:#fff; color:#0f172a; }
+    .btn.primary { border-color:var(--primary); background:var(--primary); color:#fff; }
+    .btn.danger { border-color:#ef4444; background:#fee2e2; color:#991b1b; }
+
+    main.container { padding-top: 1rem; }
+    footer.site { color:var(--muted); font-size:.9rem; margin:2rem 0; text-align:center; }
+  </style>
+  {% block extra_head %}{% endblock %}
 </head>
 <body>
-  <nav class="nav">
-    <div class="nav-inner container">
-      <a class="brand" href="{% url 'dashboard:hello' %}">⚡ Мій сайт</a>
-      <a href="{% url 'dashboard:hello' %}">Головна</a>
-      <a href="{% url 'dashboard:files' %}">Файли</a>
-      <a href="/books/">Книги</a>
-      <span class="spacer"></span>
-      <a class="btn secondary" href="/admin/">Адмінка</a>
-    </div>
-  </nav>
 
-  {# ⬇⬇⬇ Крихти (breadcrumbs) — показуємо, якщо присутні в контексті ⬇⬇⬇ #}
-  {% if breadcrumbs %}
-    <div class="container small" style="opacity:.9;margin-top:8px">
-      {% for label, url in breadcrumbs %}
-        {% if url %}
-          <a href="{{ url }}">{{ label }}</a>{% if not forloop.last %} / {% endif %}
-        {% else %}
-          <span>{{ label }}</span>
-        {% endif %}
-      {% endfor %}
+<header class="site" role="banner">
+  <div class="container topbar">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">⚡</span>
+      <a href="{% url 'dashboard:home' %}">Мій сайт</a>
+    </div>
+    <nav aria-label="Основна навігація">
+      <a href="{% url 'dashboard:home' %}" class="{% if request.resolver_match.namespace == 'dashboard' %}active{% endif %}">Головна</a>
+      <a href="{% url 'books:book_catalog' %}" class="{% if request.resolver_match.namespace == 'books' %}active{% endif %}">Книги</a>
+      <a href="/admin/" target="_blank" rel="noopener">Admin</a>
+      <a href="/api/?format=api" target="_blank" rel="noopener">API</a>
+    </nav>
+  </div>
+
+  {% if request.resolver_match.namespace != 'dashboard' or request.resolver_match.url_name != 'home' %}
+    <div class="breadcrumbs" aria-label="Хлібні крихти">
+      <div class="container crumbs">
+        ← <a href="{% url 'dashboard:home' %}">На головну</a>
+        {% block breadcrumbs %}{% endblock %}
+      </div>
     </div>
   {% endif %}
+</header>
 
-  <main class="container">
+{% if messages %}
+  <div class="flash" role="status" aria-live="polite">
+    {% for message in messages %}
+      <div class="alert">{{ message }}</div>
+    {% endfor %}
+  </div>
+{% endif %}
 
-    {# Django messages #}
-    {% if messages %}
-      <div class="alerts">
-        {% for message in messages %}
-          <div class="alert alert-{{ message.tags|default:'info' }}">
-            {{ message }}
-          </div>
-        {% endfor %}
-      </div>
-    {% endif %}
+<main class="container">
+  {% block content %}
+    <div class="card" style="padding:1rem;">
+      <p style="margin:0; color: var(--muted);">Порожньо… Але це тимчасово — як черга в кав’ярні 😉</p>
+    </div>
+  {% endblock %}
+</main>
 
-    {% block content %}{% endblock %}
-  </main>
+<footer class="site">
+  <div class="container">
+    © {% now "Y" %} — З любов’ю до CBV, DRF і акуратного коду.
+  </div>
+</footer>
 
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="{% static 'dashboard/app.js' %}"></script>
-  {% block extra_js %}{% endblock %}
-
-  <script>
-    setTimeout(() => {
-      document.querySelectorAll('.alert-info').forEach(el => el.remove());
-    }, 4000);
-  </script>
+{% block extra_js %}{% endblock %}
 </body>
 </html>

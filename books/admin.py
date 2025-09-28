@@ -3,6 +3,6 @@ from .models import Book
 
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
-    list_display = ("title", "price", "created_at")
-    search_fields = ("title",)
-    prepopulated_fields = {"slug": ("title",)}  # можна руками правити перед збереженням
+    list_display = ("id", "title", "author", "published_date")
+    search_fields = ("title", "author")
+    list_filter = ("published_date",)

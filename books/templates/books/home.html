@@ -1,10 +1,36 @@
-{% extends "base.html" %}
-{% block title %}Книгарня{% endblock %}
-{% block content %}
-  <section class="card">
-    <h3>Книгарня 📚</h3>
-    <p class="small">Ласкаво просимо! Скоро тут буде список книг.</p>
-
-    <p><a class="btn" href="{% url 'books:book_catalog' %}">Перейти до каталогу →</a></p>
+{% load static %}
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <title>Головна</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;margin:0;padding:0 1rem;}
+    .wrap{max-width:900px;margin:0 auto;}
+    .btn{display:inline-block;padding:.5rem .75rem;border-radius:8px;border:1px solid #ddd;text-decoration:none}
+    .btn-primary{background:#0d6efd;color:#fff;border-color:#0d6efd}
+    .btn-secondary{background:#f5f5f5;color:#222}
+    nav{display:flex;gap:.5rem;flex-wrap:wrap;margin:1rem 0 1.25rem}
+    header h1{margin:1.25rem 0 .25rem}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Вітаю у книжковому міні-проєкті 📚</h1>
+    <p style="color:#666;margin:.25rem 0 0;">Все працює, все в одному стилі.</p>
+  </header>
+  <nav>
+    <a class="btn btn-secondary" href="/">Головна</a>
+    <a class="btn btn-secondary" href="/books/catalog/">Каталог</a>
+    <a class="btn btn-secondary" href="/books/create/">Додати книгу</a>
+    <a class="btn btn-secondary" href="/api/books/">API</a>
+    <a class="btn btn-secondary" href="/admin/">Адмінка</a>
+  </nav>
+  <section style="color:#444;line-height:1.55">
+    <p>Каталог книг тепер за адресою <code>/books/catalog/</code>. Користуйся пошуком і сторінками.</p>
   </section>
-{% endblock %}
+</div>
+</body>
+</html>

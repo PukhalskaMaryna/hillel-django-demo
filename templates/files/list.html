@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Файли (MEDIA){% endblock %}
+{% block header %}Файли (MEDIA){% endblock %}
+{% block content %}
+  <div class="card">
+    <p>Каталог MEDIA: <code>{{ MEDIA_ROOT }}</code></p>
+    <p>Скидай сюди файли: <code>media/</code> (папки — теж ок).</p>
+  </div>
+  {% if tree %}
+    {% for path, files in tree %}
+      <div class="card">
+        <h3 style="margin:0 0 8px 0">{{ path|default:"(корінь)" }}</h3>
+        <ul style="margin:0">
+          {% for f in files %}
+            <li><a href="{{ MEDIA_URL }}{{ path }}{{ f }}" target="_blank">{{ f }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="card"><em>Порожньо. Поклади будь-який файл у <code>media/</code> — і він з'явиться тут.</em></div>
+  {% endif %}
+{% endblock %}
