@@ -46,12 +46,7 @@
       <span class="logo" aria-hidden="true">⚡</span>
       <a href="{% url 'dashboard:home' %}">Мій сайт</a>
     </div>
-    <nav aria-label="Основна навігація">
-      <a href="{% url 'dashboard:home' %}" class="{% if request.resolver_match.namespace == 'dashboard' %}active{% endif %}">Головна</a>
-      <a href="{% url 'books:book_catalog' %}" class="{% if request.resolver_match.namespace == 'books' %}active{% endif %}">Книги</a>
-      <a href="/admin/" target="_blank" rel="noopener">Admin</a>
-      <a href="/api/?format=api" target="_blank" rel="noopener">API</a>
-    </nav>
+    \1\2  <a href="/token/" class="btn">🔑 Токен API</a> \3
   </div>
 
   {% if request.resolver_match.namespace != 'dashboard' or request.resolver_match.url_name != 'home' %}
